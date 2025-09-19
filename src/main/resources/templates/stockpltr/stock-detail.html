@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title}">股票详情</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .stock-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem 0;
+        }
+        .metric-card {
+            border: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+        .metric-card:hover {
+            transform: translateY(-2px);
+        }
+        .price-positive {
+            color: #28a745;
+        }
+        .price-negative {
+            color: #dc3545;
+        }
+        .comment-card {
+            border-left: 4px solid #007bff;
+        }
+        .sentiment-positive {
+            border-left-color: #28a745;
+        }
+        .sentiment-negative {
+            border-left-color: #dc3545;
+        }
+        .sentiment-neutral {
+            border-left-color: #ffc107;
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/stockpltr/">
+                <i class="bi bi-graph-up"></i> StockPltr
+            </a>
+            <div class="navbar-nav me-auto">
+                <a class="nav-link" href="/stockpltr/stocks">股票列表</a>
+                <a class="nav-link" href="/stockpltr/search">搜索</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 股票头部信息 -->
+    <section class="stock-header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1 class="display-4 mb-2" th:text="${symbol}">AAPL</h1>
+                    <h3 th:if="${hasData}" th:text="${stockData.companyName}">Apple Inc.</h3>
+                    <p th:if="${hasData}" class="lead mb-0" th:text="'数据来源: ' + ${stockData.dataSource}">数据来源: stockpltr</p>
+                </div>
+                <div class="col-md-4 text-end">
+                    <div th:if="${hasData}">
+                        <h2 class="mb-0" th:text="${stockData.currentPrice}">150.00</h2>
+                        <span th:if="${stockData.priceChange != null}" 
+                              th:class="${stockData.priceChange >= 0 ? 'price-positive' : 'price-negative'}"
+                              th:text="${stockData.priceChange} + ' (' + ${stockData.priceChangePercent} + '%)'">+2.50 (+1.69%)</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 错误信息 -->
+    <div th:if="${error}" class="container mt-4">
+        <div class="alert alert-danger" role="alert">
+            <i class="bi bi-exclamation-triangle"></i>
+            <span th:text="${error}">错误信息</span>
+        </div>
+    </div>
+
+    <!-- 主要内容 -->
+    <div th:if="${hasData}" class="container mt-4">
+        <!-- 操作按钮 -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="btn-group" role="group">
+                    <a th:href="@{/stockpltr/stock/{symbol}/comments(symbol=${symbol})}" class="btn btn-outline-primary">
+                        <i class="bi bi-chat-dots"></i> 用户评论
+                    </a>
+                    <a th:href="@{/stockpltr/stock/{symbol}/history(symbol=${symbol})}" class="btn btn-outline-success">
+                        <i class="bi bi-graph-up"></i> 历史数据
+                    </a>
+                    <a th:href="@{/stockpltr/stock/{symbol}/statistics(symbol=${symbol})}" class="btn btn-outline-info">
+                        <i class="bi bi-bar-chart"></i> 数据统计
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- 股票指标 -->
+        <div class="row mb-4">
+            <div class="col-md-3 mb-3">
+                <div class="card metric-card">
+                    <div class="card-body text-center">
+                        <h6 class="card-title text-muted">成交量</h6>
+                        <h4 th:text="${stockData.volume}">50,000,000</h4>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card metric-card">
+                    <div class="card-body text-center">
+                        <h6 class="card-title text-muted">市值</h6>
+                        <h4 th:text="${stockData.marketCap}">2.5T</h4>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card metric-card">
+                    <div class="card-body text-center">
+                        <h6 class="card-title text-muted">市盈率</h6>
+                        <h4 th:text="${stockData.peRatio}">25.5</h4>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card metric-card">
+                    <div class="card-body text-center">
+                        <h6 class="card-title text-muted">市净率</h6>
+                        <h4 th:text="${stockData.pbRatio}">5.2</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 财务数据 -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="bi bi-calculator"></i> 财务指标</h5>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-borderless">
+                            <tr th:if="${stockData.dividendYield != null}">
+                                <td>股息率</td>
+                                <td th:text="${stockData.dividendYield} + '%'">0.5%</td>
+                            </tr>
+                            <tr th:if="${stockData.recommendation != null}">
+                                <td>推荐评级</td>
+                                <td><span class="badge bg-success" th:text="${stockData.recommendation}">BUY</span></td>
+                            </tr>
+                            <tr th:if="${stockData.targetPrice != null}">
+                                <td>目标价格</td>
+                                <td th:text="${stockData.targetPrice}">160.00</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="bi bi-info-circle"></i> 数据信息</h5>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-borderless">
+                            <tr>
+                                <td>数据源</td>
+                                <td th:text="${stockData.dataSource}">stockpltr</td>
+                            </tr>
+                            <tr>
+                                <td>爬取时间</td>
+                                <td th:text="${#temporals.format(stockData.crawlTime, 'yyyy-MM-dd HH:mm:ss')}">2024-12-19 18:45:00</td>
+                            </tr>
+                            <tr>
+                                <td>创建时间</td>
+                                <td th:text="${#temporals.format(stockData.createdAt, 'yyyy-MM-dd HH:mm:ss')}">2024-12-19 18:45:00</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 用户评论预览 -->
+        <div th:if="${comments != null and !comments.empty}" class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0"><i class="bi bi-chat-dots"></i> 最新评论</h5>
+                        <a th:href="@{/stockpltr/stock/{symbol}/comments(symbol=${symbol})}" class="btn btn-sm btn-outline-primary">
+                            查看全部 <span th:text="${comments.size()}">5</span> 条评论
+                        </a>
+                    </div>
+                    <div class="card-body">
+                        <div th:each="comment, iterStat : ${comments}" th:if="${iterStat.index < 3}">
+                            <div class="card comment-card mb-3" th:classappend="${comment.sentiment == 'positive' ? 'sentiment-positive' : (comment.sentiment == 'negative' ? 'sentiment-negative' : 'sentiment-neutral')}">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <div>
+                                            <strong th:text="${comment.userName}">用户名</strong>
+                                            <small class="text-muted ms-2" th:text="${#temporals.format(comment.commentTime, 'MM-dd HH:mm')}">12-19 18:45</small>
+                                        </div>
+                                        <div>
+                                            <span th:if="${comment.sentiment != null}" 
+                                                  th:class="${comment.sentiment == 'positive' ? 'badge bg-success' : (comment.sentiment == 'negative' ? 'badge bg-danger' : 'badge bg-warning')}"
+                                                  th:text="${comment.sentiment}">positive</span>
+                                        </div>
+                                    </div>
+                                    <p class="mb-2" th:text="${comment.content}">评论内容...</p>
+                                    <div class="d-flex justify-content-between">
+                                        <small class="text-muted">
+                                            <i class="bi bi-heart"></i> <span th:text="${comment.likesCount}">10</span>
+                                            <i class="bi bi-reply ms-3"></i> <span th:text="${comment.repliesCount}">2</span>
+                                        </small>
+                                        <small class="text-muted" th:text="${comment.sentimentScore}">0.8</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 无评论提示 -->
+        <div th:if="${comments == null or comments.empty}" class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body text-center py-5">
+                        <i class="bi bi-chat-dots text-muted" style="font-size: 3rem;"></i>
+                        <h5 class="text-muted mt-3">暂无用户评论</h5>
+                        <p class="text-muted">该股票还没有用户评论数据</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 页脚 -->
+    <footer class="bg-dark text-white py-4 mt-5">
+        <div class="container text-center">
+            <p>&copy; 2024 StockPltr数据监控系统</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
