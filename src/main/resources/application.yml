@@ -35,8 +35,8 @@ logging:
 twitter:
   monitor:
     enabled: true
-    target-user: elonmusk
-    target-url: https://x.com/elonmusk
+    target-user: xiaozhaolucky
+    target-url: https://x.com/xiaozhaolucky
     check-interval: 30 # 秒
     timeout: 30 # 秒
     max-retries: 3 # 最大重试次数
@@ -74,3 +74,34 @@ futu:
     enable-realtime-quote: true
     enable-order-book: false
     enable-ticker: false
+
+# StockPltr爬虫配置
+stockpltr:
+  crawl:
+    enabled: true # 是否启用爬虫
+    interval: 300 # 爬取间隔（秒）
+    batch-size: 10 # 批量处理大小
+    timeout: 30 # 请求超时时间（秒）
+    max-retries: 3 # 最大重试次数
+    delay-between-requests: 2000 # 请求间延迟（毫秒）
+    
+  data:
+    retention-days: 30 # 数据保留天数
+    enable-cache: true # 是否启用缓存
+    cache-duration: 300 # 缓存持续时间（秒）
+    
+  website:
+    base-url: https://www.stockpltr.com
+    search-url: https://www.stockpltr.com/search
+    stock-detail-url: https://www.stockpltr.com/stock
+    
+  monitoring:
+    symbols: # 默认监控的股票代码
+      - AAPL
+      - TSLA
+      - PLTR
+      - NVDA
+      - MSFT
+      - GOOGL
+      - AMZN
+      - META

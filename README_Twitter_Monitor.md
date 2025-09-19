@@ -25,8 +25,8 @@
 twitter:
   monitor:
     enabled: true                    # 是否启用监控
-    target-user: xiaozhaolucky      # 目标用户
-    target-url: https://x.com/xiaozhaolucky  # 目标URL
+    target-user: xiaozhaolucky     # 目标用户
+    target-url: https://x.com/xiaozhaolucky   # 目标URL
     timeout: 30                     # 超时时间（秒）
     max-retries: 3                  # 最大重试次数
 
