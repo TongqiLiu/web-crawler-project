@@ -36,7 +36,10 @@ twitter:
   monitor:
     enabled: true
     target-user: xiaozhaolucky
+    target-url: https://x.com/xiaozhaolucky
     check-interval: 30 # 秒
+    user-agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
+    timeout: 10000 # 毫秒
 
 # 股票数据配置
 stock:

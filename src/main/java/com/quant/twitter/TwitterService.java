@@ -1,5 +1,6 @@
 package com.quant.twitter;
 
+import com.quant.config.TwitterConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,9 @@ public class TwitterService {
     @Autowired
     private TwitterMonitor twitterMonitor;
     
+    @Autowired
+    private TwitterConfig twitterConfig;
+    
     @PostConstruct
     public void init() {
         // 添加控制台监听器
@@ -33,8 +37,13 @@ public class TwitterService {
         });
         
         // 启动监控
-        twitterMonitor.startMonitoring();
-        logger.info("Twitter服务已启动，开始监控 @xiaozhaolucky");
+        if (twitterConfig.isEnabled()) {
+            twitterMonitor.startMonitoring();
+            logger.info("Twitter服务已启动，开始监控 @{}", twitterConfig.getTargetUser());
+            logger.info("监控配置: {}", twitterConfig);
+        } else {
+            logger.info("Twitter监控已禁用");
+        }
     }
     
     @PreDestroy

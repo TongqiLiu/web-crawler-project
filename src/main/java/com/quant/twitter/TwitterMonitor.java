@@ -1,9 +1,5 @@
 package com.quant.twitter;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -14,6 +10,11 @@ import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 /**
  * Twitter监控器
@@ -26,7 +27,19 @@ public class TwitterMonitor {
     
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     private final List<TweetListener> listeners = new ArrayList<>();
-    private final String targetUser = "xiaozhaolucky";
+    
+    @Value("${twitter.monitor.target-user:xiaozhaolucky}")
+    private String targetUser;
+    
+    @Value("${twitter.monitor.target-url:https://x.com/xiaozhaolucky}")
+    private String targetUrl;
+    
+    @Value("${twitter.monitor.user-agent:Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36}")
+    private String userAgent;
+    
+    @Value("${twitter.monitor.timeout:10000}")
+    private int timeout;
+    
     private String lastTweetId = null;
     private boolean isMonitoring = false;
     
@@ -48,6 +61,7 @@ public class TwitterMonitor {
         
         isMonitoring = true;
         logger.info("开始监控Twitter用户: @{}", targetUser);
+        logger.info("监控地址: {}", targetUrl);
         
         // 每30秒检查一次新推文
         scheduler.scheduleAtFixedRate(this::checkForNewTweets, 0, 30, TimeUnit.SECONDS);
@@ -89,8 +103,9 @@ public class TwitterMonitor {
             // 使用curl命令获取Twitter页面内容
             ProcessBuilder pb = new ProcessBuilder(
                 "curl", "-s", 
-                "https://x.com/" + targetUser,
-                "-H", "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36"
+                targetUrl,
+                "-H", "User-Agent: " + userAgent,
+                "--connect-timeout", String.valueOf(timeout / 1000)
             );
             
             Process process = pb.start();
