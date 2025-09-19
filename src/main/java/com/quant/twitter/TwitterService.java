@@ -1,10 +1,11 @@
 package com.quant.twitter;
 
-import com.quant.config.TwitterConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.quant.config.TwitterConfig;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
@@ -27,13 +28,19 @@ public class TwitterService {
     @PostConstruct
     public void init() {
         // 添加控制台监听器
-        twitterMonitor.addListener((username, tweetId) -> {
-            System.out.println("\n" + "=".repeat(50));
+        twitterMonitor.addListener((tweet) -> {
+            System.out.println("\n" + "=".repeat(80));
             System.out.println("🚨 Twitter 新推文提醒 🚨");
-            System.out.println("用户: @" + username);
-            System.out.println("推文ID: " + tweetId);
-            System.out.println("时间: " + java.time.LocalDateTime.now());
-            System.out.println("=".repeat(50) + "\n");
+            System.out.println("用户: @" + tweet.getUsername());
+            System.out.println("推文ID: " + tweet.getId());
+            System.out.println("推文链接: " + tweet.getUrl());
+            System.out.println("发布时间: " + (tweet.getPublishTime() != null ? tweet.getPublishTime() : "未知"));
+            System.out.println("检测时间: " + tweet.getDetectTime());
+            System.out.println("内容预览: " + tweet.getPreview());
+            if (tweet.getContent() != null && !tweet.getContent().isEmpty()) {
+                System.out.println("完整内容: " + tweet.getContent());
+            }
+            System.out.println("=".repeat(80) + "\n");
         });
         
         // 启动监控

@@ -38,10 +38,39 @@ twitter:
     target-user: xiaozhaolucky
     target-url: https://x.com/xiaozhaolucky
     check-interval: 30 # 秒
-    user-agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
-    timeout: 10000 # 毫秒
+    timeout: 30 # 秒
+    max-retries: 3 # 最大重试次数
+
+# WebDriver配置
+webdriver:
+  headless: true # 无头模式
+  user-agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36
+  timeout: 30 # 秒
+  window-size: 1920,1080
 
 # 股票数据配置
 stock:
-  data-source: yahoo-finance
+  data-source: futu-api  # futu-api 或 yahoo-finance
   update-interval: 60 # 秒
+
+# 富途API配置
+futu:
+  api:
+    enabled: true
+    host: 127.0.0.1
+    port: 11111
+    enable-encrypt: false
+    connection-timeout: 3000
+    keep-alive-interval: 10
+    user-agent: StockQuantSystem/1.0
+    
+    # 市场支持
+    enable-us-stock: true
+    enable-hk-stock: false
+    enable-cn-stock: false
+    
+    # 数据订阅
+    max-subscriptions: 100
+    enable-realtime-quote: true
+    enable-order-book: false
+    enable-ticker: false

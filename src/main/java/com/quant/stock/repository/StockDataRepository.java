@@ -1,14 +1,16 @@
 package com.quant.stock.repository;
 
-import com.quant.stock.model.StockData;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
+import com.quant.stock.model.StockData;
 
 /**
  * 股票数据仓库接口
@@ -81,6 +83,7 @@ public interface StockDataRepository extends JpaRepository<StockData, Long> {
      * @param cutoffTime 截止时间
      * @return 删除的记录数
      */
+    @Modifying
     @Query("DELETE FROM StockData s WHERE s.lastUpdated < :cutoffTime")
     int deleteOldData(@Param("cutoffTime") LocalDateTime cutoffTime);
 }
