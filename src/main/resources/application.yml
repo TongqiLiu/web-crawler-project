@@ -35,8 +35,8 @@ logging:
 twitter:
   monitor:
     enabled: true
-    target-user: xiaozhaolucky
-    target-url: https://x.com/xiaozhaolucky
+    target-user: elonmusk
+    target-url: https://x.com/elonmusk
     check-interval: 30 # 秒
     timeout: 30 # 秒
     max-retries: 3 # 最大重试次数
