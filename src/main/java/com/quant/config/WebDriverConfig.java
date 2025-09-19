@@ -61,7 +61,8 @@ public class WebDriverConfig {
         options.addArguments("--disable-extensions");
         options.addArguments("--disable-plugins");
         options.addArguments("--disable-images");
-        options.addArguments("--disable-javascript");
+        // Twitter需要JavaScript渲染，不禁用JavaScript
+        // options.addArguments("--disable-javascript");
         
         // 反检测配置
         options.addArguments("--disable-blink-features=AutomationControlled");

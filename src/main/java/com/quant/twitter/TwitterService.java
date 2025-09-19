@@ -63,7 +63,31 @@ public class TwitterService {
      * 手动检查推文
      */
     public void checkTweetsNow() {
-        logger.info("手动检查推文...");
-        // 这里可以添加手动检查的逻辑
+        logger.info("手动检查推文开始...");
+        try {
+            if (!twitterConfig.isEnabled()) {
+                logger.warn("Twitter监控未启用，无法手动检查");
+                return;
+            }
+            
+            // 触发监控器的检查方法
+            twitterMonitor.manualCheck();
+            logger.info("手动检查推文完成");
+            
+        } catch (Exception e) {
+            logger.error("手动检查推文失败: {}", e.getMessage(), e);
+        }
+    }
+    
+    /**
+     * 获取监控状态
+     */
+    public String getMonitoringStatus() {
+        return String.format(
+            "Twitter监控状态: %s, 目标用户: @%s, 配置: %s",
+            twitterConfig.isEnabled() ? "运行中" : "已停用",
+            twitterConfig.getTargetUser(),
+            twitterConfig
+        );
     }
 }

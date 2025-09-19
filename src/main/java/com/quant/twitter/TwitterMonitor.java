@@ -272,6 +272,22 @@ public class TwitterMonitor {
     }
     
     /**
+     * 手动检查推文（用于测试）
+     */
+    public void manualCheck() {
+        logger.info("执行手动推文检查...");
+        checkForNewTweets();
+        logger.info("手动推文检查完成");
+    }
+    
+    /**
+     * 获取当前监控状态
+     */
+    public boolean isMonitoring() {
+        return isMonitoring;
+    }
+    
+    /**
      * 推文监听器接口
      */
     public interface TweetListener {
