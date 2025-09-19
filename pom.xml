@@ -5,13 +5,13 @@
          http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.crawler</groupId>
-    <artifactId>web-crawler-project</artifactId>
+    <groupId>com.quant</groupId>
+    <artifactId>stock-quant-system</artifactId>
     <version>1.0.0</version>
     <packaging>jar</packaging>
 
-    <name>Web Crawler Project</name>
-    <description>A Java web crawler project for data extraction</description>
+    <name>Stock Quantitative Analysis System</name>
+    <description>A comprehensive stock quantitative analysis system with Twitter monitoring</description>
 
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
@@ -55,6 +55,35 @@
             <version>1.4.8</version>
         </dependency>
 
+        <!-- Spring Boot for web framework -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+            <version>3.2.0</version>
+        </dependency>
+
+        <!-- Spring Boot Data JPA for database -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+            <version>3.2.0</version>
+        </dependency>
+
+        <!-- H2 Database for development -->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>2.2.224</version>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- Twitter4J for Twitter API -->
+        <dependency>
+            <groupId>org.twitter4j</groupId>
+            <artifactId>twitter4j-core</artifactId>
+            <version>4.1.2</version>
+        </dependency>
+
         <!-- JUnit for testing -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -66,6 +95,19 @@
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>3.2.0</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
